@@ -7,11 +7,13 @@ import DishCard from "../../components/card/dish.card.tsx";
 import {NavbarHeight} from "../../styling/size.ts";
 import {DeckNames} from "../../styling/colors.ts";
 import {IconArrowsShuffle, IconDice, IconFilter, IconPlus, IconRefresh, IconSearch} from "@tabler/icons-react";
+import {CacheStorage} from "../../enums/storage.ts";
 
-export default function Homepage(){
+export default function Homepage() {
 
     // Data
     const [dishes, setDishes] = useState<Dish[]>([]);
+    const [tags, setTags] = useState<any[]>([])
 
     // Form
     const [theme, setTheme] = useState<DeckNames>(DeckNames.CherryBlossomBloom)
@@ -19,42 +21,73 @@ export default function Homepage(){
     const [tagFilter, setTagFilter] = useState<string>("")
 
     useEffect(() => {
-        (async() => await getDishes())();
+        (async () => await getDishes())();
+        (async () => await getTags())();
     }, []);
+
+    async function getTags(): Promise<void>{
+
+        function tagToSelectOption(data: any[]){
+            const labels: any[] = []
+            for(let i = 0; i < data.length; i++){
+                labels.push({
+                    label: data[i].name,
+                    value: data[i].name
+                })
+            }
+            setTags(labels)
+        }
+
+        const cache = localStorage.getItem(CacheStorage.tags)
+        if(!cache) {
+            const dishService = new DishService();
+            const tagsData = await dishService.getAllTags()
+
+            if (tagsData.status) {
+                tagToSelectOption(tagsData.data!)
+                localStorage.setItem(CacheStorage.tags, JSON.stringify(tagsData.data))
+            } else {
+                UtilsService.log_timestamp(tagsData.message!)
+            }
+        } else {
+            tagToSelectOption(JSON.parse(cache))
+        }
+    }
 
     async function getDishes(): Promise<void> {
         const dishService = new DishService();
         const dishesData = await dishService.getAllDishes()
 
-        if(dishesData.status){
+        if (dishesData.status) {
             setDishes(dishesData.data!)
         } else {
             UtilsService.log_timestamp(dishesData.message!)
         }
     }
 
-    function handleSearch(){
+    async function handleSearch() {
 
     }
 
-    function handleFilter(){
+    async function handleFilter() {
 
     }
 
-    function handleShuffle(){
+    async function handleShuffle() {
 
     }
 
-    function handlePick(){
+    async function handlePick() {
 
     }
 
-    function handleAdd(){
+    async function handleAdd() {
 
     }
 
-    function handleRefresh(){
-
+    async function handleRefresh() {
+        await getTags()
+        await getDishes()
     }
 
     return (
@@ -67,52 +100,58 @@ export default function Homepage(){
                         <Stack gap={5}>
                             <Text>Search</Text>
                             <Group>
-                                <TextInput value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)} />
-                                <Button onClick={handleSearch} leftSection={<IconSearch />}>SEARCH</Button>
+                                <TextInput value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)}/>
+                                <Button onClick={handleSearch} leftSection={<IconSearch/>}>SEARCH</Button>
                             </Group>
                         </Stack>
-                        <Divider orientation={'vertical'} />
+                        <Divider orientation={'vertical'}/>
                         <Stack gap={5}>
                             <Text>Filter</Text>
                             <Group>
-                                <Select value={tagFilter} onChange={(e) => {
-                                    if(e){
+                                <Select data={tags} multiple={true} value={tagFilter} onChange={(e) => {
+                                    if (e) {
                                         setTagFilter(e)
                                     }
-                                }} />
-                                <Button onClick={handleFilter} leftSection={<IconFilter />}>FILTER</Button>
+                                }}/>
+                                <Button onClick={handleFilter} leftSection={<IconFilter/>}>FILTER</Button>
                             </Group>
                         </Stack>
                     </Group>
                     <Group>
                         <Stack gap={5}>
                             <Text>Theme</Text>
-                            <Select value={theme} onChange={(e) => setTheme(e as DeckNames)} />
+                            <Select data={
+                                Object.values(DeckNames).map((str) => ({
+                                    value: str,
+                                    label: str
+                                }))
+                            } value={theme} onChange={(e) => setTheme(e as DeckNames)}/>
                         </Stack>
-                        <Divider orientation={'vertical'} />
+                        <Divider orientation={'vertical'}/>
                         <Stack gap={5}>
                             <Text>Controls</Text>
                             <Group>
-                                <Button onClick={handleShuffle} leftSection={<IconArrowsShuffle />}>SHUFFLE</Button>
-                                <Button onClick={handlePick} leftSection={<IconDice />}>PICK 1</Button>
-                                <Button onClick={handleAdd} leftSection={<IconPlus />}>ADD</Button>
-                                <Button onClick={handleRefresh} leftSection={<IconRefresh />}>REFRESH</Button>
+                                <Button onClick={handleShuffle} leftSection={<IconArrowsShuffle/>}>SHUFFLE</Button>
+                                <Button onClick={handlePick} leftSection={<IconDice/>}>PICK 1</Button>
+                                <Button onClick={handleAdd} leftSection={<IconPlus/>}>ADD</Button>
+                                <Button onClick={handleRefresh} leftSection={<IconRefresh/>}>REFRESH</Button>
                             </Group>
                         </Stack>
                     </Group>
                 </Group>
-                <Divider />
+                <Divider/>
                 <Grid>
                     {
-                        dishes.length > 0 ? dishes.map((dish: Dish, index: number) => {
+                        dishes.length > 0 && dishes.map((dish: Dish, index: number) => {
+                            const color = UtilsService.getColor(theme, index + 1)
                             return (
                                 <Grid.Col span={{
                                     base: 12, xs: 6, sm: 4, md: 4, lg: 2
                                 }} key={`dish-${index}-${dish.name}`}>
-                                    <DishCard dish={dish} />
+                                    <DishCard index={index + 1} dish={dish} bgColor={color.bg} textColor={color.text}/>
                                 </Grid.Col>
                             )
-                        }) : <Text>No dishes available</Text>
+                        })
                     }
                 </Grid>
             </Stack>

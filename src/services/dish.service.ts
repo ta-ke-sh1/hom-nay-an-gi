@@ -17,7 +17,22 @@ export class DishService {
                 message: e.toString(),
             }
         }
-
     }
+
+    async getAllTags(): Promise<ResponseData> {
+        try {
+            const tags = await DatabaseService.getInstance().get(FirestoreTables.TAGS)
+            return {
+                status: true,
+                data: tags,
+            }
+        } catch (e: any) {
+            return {
+                status: false,
+                message: e.toString(),
+            }
+        }
+    }
+
 
 }
