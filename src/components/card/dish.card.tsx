@@ -3,15 +3,21 @@ import {Card, Title} from "@mantine/core";
 import {headerStyle} from "../../styling/typo.ts";
 
 export interface DishCardProps {
-    dish: Dish
+    dish: Dish,
+    bgColor?: string,
+    textColor?: string,
 }
 
-export default function DishCard({ dish }: DishCardProps) {
+export default function DishCard({ dish, bgColor = 'white', textColor = 'black' }: DishCardProps) {
     return (
-        <Card>
-            <Card.Section>
+        <Card shadow={'xs'} style={{
+            height: '400px',
+            backgroundColor: bgColor
+        }}>
+            <Card.Section p={'md'}>
                 <Title style={{
-                    ...headerStyle
+                    ...headerStyle,
+                    color: textColor
                 }}>
                     {dish.name}
                 </Title>
