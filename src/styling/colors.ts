@@ -16,10 +16,6 @@ export const ColorDecks: Record<DeckNames, Color[]> = {
             text: "white"
         },
         {
-            bg: "#005f73",
-            text: "white"
-        },
-        {
             bg: "#2a9d8f",
             text: "white"
         },
@@ -50,10 +46,6 @@ export const ColorDecks: Record<DeckNames, Color[]> = {
             text: "white",
         },
         {
-            bg: "#f4978e",
-            text: "white",
-        },
-        {
             bg: "#f8ad9d",
             text: "black",
         },
@@ -68,20 +60,16 @@ export const ColorDecks: Record<DeckNames, Color[]> = {
     ],
     [DeckNames.CherryBlossomBloom]: [
         {
-            bg: "#590d22",
-            text: "white",
-        },
-        {
-            bg: "#800f2f",
-            text: "white"
-        },
-        {
             bg: "#a4133c",
             text: "white",
         },
         {
-            bg: "#c9184a",
-            text: "white"
+            bg: "#590d22",
+            text: "white",
+        },
+        {
+            bg: "#a4133c",
+            text: "white",
         },
         {
             bg: "#ff4d6d",
@@ -90,10 +78,6 @@ export const ColorDecks: Record<DeckNames, Color[]> = {
         {
             bg: "#ff758f",
             text: "white"
-        },
-        {
-            bg: "#ff8fa3",
-            text: "black"
         },
         {
             bg: "#ffb3c1",

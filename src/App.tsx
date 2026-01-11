@@ -1,6 +1,6 @@
 import {createTheme, MantineProvider} from "@mantine/core";
 import {createBrowserRouter, RouterProvider} from "react-router";
-import Homepage from "./layout/homepage/homepage.tsx";
+import HomepageLayout from "./layout/homepage/homepage.layout.tsx";
 
 import '@mantine/core/styles.css';
 import NavigationBar from "./components/navigation/bar.tsx";
@@ -13,7 +13,7 @@ export default function App(){
     const router = createBrowserRouter([
         {
             path: "*",
-            element: <Homepage />
+            element: <HomepageLayout />
         }
     ])
 
