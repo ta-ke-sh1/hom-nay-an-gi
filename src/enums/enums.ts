@@ -1,5 +1,5 @@
 export enum FirestoreTables {
-    TAGS = 'tags',
-    DISHES = 'dished',
-    LOCATIONS = 'locations',
+    TAGS = 'Tags',
+    DISHES = 'Dishes',
+    LOCATIONS = 'Locations',
 }
