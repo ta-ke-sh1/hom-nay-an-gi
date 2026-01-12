@@ -3,7 +3,6 @@ import {createBrowserRouter, RouterProvider} from "react-router";
 import HomepageLayout from "./layout/homepage/homepage.layout.tsx";
 
 import '@mantine/core/styles.css';
-import NavigationBar from "./components/navigation/bar.tsx";
 
 import "@fontsource/arimo/700.css";
 import "@fontsource/geist-mono/400.css";
@@ -23,7 +22,6 @@ export default function App(){
 
     return (
         <MantineProvider theme={theme}>
-            <NavigationBar />
             <RouterProvider router={router} />
         </MantineProvider>
     )

@@ -1,3 +1,4 @@
 export enum CacheStorage {
-    tags =  "TAGS"
+    tags =  "TAGS",
+    dishes = "DISHES"
 }

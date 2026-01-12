@@ -1,81 +1,80 @@
 import {
-    ActionIcon,
-    Button,
     Container,
-    Divider,
     Grid,
-    Group,
     Modal,
-    Select,
     Stack,
-    Text,
-    TextInput
 } from "@mantine/core";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import type {Dish} from "../../model/dish/dish.ts";
 import {DishService} from "../../services/dish.service.ts";
 import {UtilsService} from "../../services/utils.service.ts";
 import DishCard from "../../components/card/dish.card.tsx";
 import {NavbarHeight} from "../../styling/size.ts";
 import {DeckNames} from "../../styling/colors.ts";
-import {IconArrowsShuffle, IconDice, IconFilter, IconPlus, IconRefresh, IconSearch} from "@tabler/icons-react";
-import {CacheStorage} from "../../enums/storage.ts";
 import DishModal from "./components/modals/dish.modal.tsx";
+import {ZIndexLevels} from "../../styling/zIndex.ts";
+import ControlBar from "./controls/control.tsx";
+import DisplayControls from "./controls/display.tsx";
+import FilterControls from "./controls/filter.tsx";
+import gsap from "gsap";
+import {CacheStorage} from "../../enums/storage.ts";
 
 export default function HomepageLayout() {
 
+    const displayRef = useRef<any>(null);
+    const filterRef = useRef<any>(null);
+
     // Data
     const [dishes, setDishes] = useState<Dish[]>([]);
-    const [tags, setTags] = useState<any[]>([])
+
 
     // Actions
     const [theme, setTheme] = useState<DeckNames>(DeckNames.CherryBlossomBloom)
-    const [searchKeyword, setSearchKeyword] = useState<string>("")
-    const [tagFilter, setTagFilter] = useState<string>("")
+
+    const [tagFilter, setTagFilter] = useState<string[]>([])
 
     // Form state
     const [openDish, setOpenDish] = useState<boolean>(false);
 
+    const [openTag, setOpenTag] = useState<boolean>(false);
+
+    const [openFilterMenu, setOpenFilterMenu] = useState<boolean>(false);
+    const [openDisplayMenu, setOpenDisplayMenu] = useState<boolean>(false);
+
+    // Fetch dishes
     useEffect(() => {
         (async () => await getDishes())();
-        (async () => await getTags())();
     }, []);
 
-    async function getTags(force = false): Promise<void>{
-
-        function tagToSelectOption(data: any[]){
-            const labels: any[] = []
-            for(let i = 0; i < data.length; i++){
-                labels.push({
-                    label: data[i].name,
-                    value: data[i].name
-                })
-            }
-            setTags(labels)
+    // Control display
+    useEffect(() => {
+        if(displayRef.current){
+            gsap.set(displayRef.current, {
+                bottom: '-100%'
+            })
         }
 
-        const cache = localStorage.getItem(CacheStorage.tags)
-        if(!cache || force) {
-            const dishService = new DishService();
-            const tagsData = await dishService.getAllTags()
-
-            if (tagsData.status) {
-                tagToSelectOption(tagsData.data!)
-                localStorage.setItem(CacheStorage.tags, JSON.stringify(tagsData.data))
-            } else {
-                UtilsService.log_timestamp(tagsData.message!)
-            }
-        } else {
-            tagToSelectOption(JSON.parse(cache))
+        if(filterRef.current) {
+            gsap.set(filterRef.current, {
+                bottom: '-100%'
+            })
         }
-    }
+    }, []);
 
     async function getDishes(): Promise<void> {
+
+        const cached = localStorage.getItem(CacheStorage.dishes);
+        if(cached){
+            setDishes(JSON.parse(cached));
+            return
+        }
+
         const dishService = new DishService();
         const dishesData = await dishService.getAllDishes()
 
         if (dishesData.status) {
             setDishes(dishesData.data!)
+            localStorage.setItem(CacheStorage.dishes, JSON.stringify(dishesData.data!))
         } else {
             UtilsService.log_timestamp(dishesData.message!)
         }
@@ -102,61 +101,68 @@ export default function HomepageLayout() {
     }
 
     async function handleRefresh() {
-        await getTags(true)
         await getDishes()
     }
 
+    function toggleDisplayControl() {
+        if(!displayRef.current){
+            return
+        }
+
+        gsap.to(displayRef.current, {
+            bottom: openDisplayMenu ? "-100%" : "0%",
+        })
+
+        setOpenDisplayMenu(!openDisplayMenu)
+    }
+
+    function toggleFilterControl() {
+        if(!filterRef.current){
+            return
+        }
+
+        gsap.to(filterRef.current, {
+            bottom: openFilterMenu ? "-100%" : "0%",
+        })
+
+        setOpenFilterMenu(!openFilterMenu)
+    }
+
     return (
-        <Container fluid p={'xl'} style={{
-            marginTop: `${NavbarHeight}px`
-        }}>
+        <Container fluid p={'xl'}>
+
+            <Stack ref={filterRef} p={'xl'} style={{
+                position: 'fixed',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: NavbarHeight,
+                width: '600px',
+                zIndex: ZIndexLevels.HIGH,
+                backgroundColor: 'white',
+                border: '1px solid rgba(0,0,0,0.2)'
+            }}>
+                <FilterControls
+                    tagFilter={tagFilter}
+                    setTagFilter={setTagFilter}
+                    handleFilter={handleFilter}
+                    handleAddDish={handleAddDish}
+                    handleSearch={handleSearch} />
+            </Stack>
+
+            <Stack ref={displayRef} p={'xl'} style={{
+                position: 'fixed',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: NavbarHeight,
+                width: '600px',
+                zIndex: ZIndexLevels.HIGH,
+                backgroundColor: 'white',
+                border: '1px solid rgba(0,0,0,0.2)'
+            }}>
+                <DisplayControls theme={theme} setTheme={setTheme} />
+            </Stack>
+
             <Stack>
-                <Group gap={'lg'} justify={'space-between'}>
-                    <Group>
-                        <Stack gap={5}>
-                            <Text>Tags</Text>
-                            <Group>
-                                <Select data={tags} multiple={true} value={tagFilter} onChange={(e) => {
-                                    if (e) {
-                                        setTagFilter(e)
-                                    }
-                                }}/>
-                                <ActionIcon onClick={handleFilter} size={'lg'}><IconFilter/></ActionIcon>
-                                <ActionIcon onClick={handleAddDish} size={'lg'}><IconPlus/></ActionIcon>
-                            </Group>
-                        </Stack>
-                        <Divider orientation={'vertical'}/>
-                        <Stack gap={5}>
-                            <Text>Dishes</Text>
-                            <Group>
-                                <Group>
-                                    <TextInput value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)}/>
-                                    <ActionIcon onClick={handleSearch} size={'lg'}><IconSearch/></ActionIcon>
-                                </Group>
-                                <ActionIcon onClick={handleShuffle} size={'lg'}><IconArrowsShuffle/></ActionIcon>
-                                <ActionIcon onClick={handlePick} size={'lg'}><IconDice/></ActionIcon>
-                                <ActionIcon onClick={handleAddDish} size={'lg'}><IconPlus/></ActionIcon>
-                                <ActionIcon onClick={handleRefresh} size={'lg'}><IconRefresh/></ActionIcon>
-                            </Group>
-                        </Stack>
-                    </Group>
-                    <Group>
-                        <Stack gap={5}>
-                            <Text>Theme</Text>
-                            <Select data={
-                                Object.values(DeckNames).map((str) => ({
-                                    value: str,
-                                    label: str
-                                }))
-                            } value={theme} onChange={(e) => {
-                                if(e) {
-                                    setTheme(e as DeckNames)
-                                }
-                            }}/>
-                        </Stack>
-                    </Group>
-                </Group>
-                <Divider/>
                 <Grid>
                     {
                         dishes.length > 0 && dishes.map((dish: Dish, index: number) => {
@@ -173,8 +179,15 @@ export default function HomepageLayout() {
                 </Grid>
             </Stack>
 
+
+            <ControlBar toggleDisplayControl={toggleDisplayControl} toggleFilterControl={toggleFilterControl} handleRefresh={handleRefresh} handlePick={handlePick} handleShuffle={handleShuffle} />
+
             <Modal title={"Add Dish"} centered={true} opened={openDish} onClose={() => setOpenDish(false)}>
                 <DishModal />
+            </Modal>
+
+            <Modal title={"Add Tag"} centered={true} opened={openTag} onClose={() => setOpenTag(false)}>
+
             </Modal>
         </Container>
     )
