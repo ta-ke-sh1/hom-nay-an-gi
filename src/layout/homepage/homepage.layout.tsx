@@ -6,9 +6,9 @@ import {
 } from "@mantine/core";
 import {useEffect, useRef, useState} from "react";
 import type {Dish} from "../../model/dish/dish.ts";
-import {DishService} from "../../services/dish.service.ts";
+import {RequestService} from "../../services/request.service.ts";
 import {UtilsService} from "../../services/utils.service.ts";
-import DishCard from "../../components/card/dish.card.tsx";
+import DishDeck from "../../components/card/dishDeck.tsx";
 import {NavbarHeight} from "../../styling/size.ts";
 import {DeckNames} from "../../styling/colors.ts";
 import DishModal from "./components/modals/dish.modal.tsx";
@@ -18,6 +18,7 @@ import DisplayControls from "./controls/display.tsx";
 import FilterControls from "./controls/filter.tsx";
 import gsap from "gsap";
 import {CacheStorage} from "../../enums/storage.ts";
+import TagModal from "./components/modals/tag.modal.tsx";
 
 export default function HomepageLayout() {
 
@@ -35,7 +36,6 @@ export default function HomepageLayout() {
 
     // Form state
     const [openDish, setOpenDish] = useState<boolean>(false);
-
     const [openTag, setOpenTag] = useState<boolean>(false);
 
     const [openFilterMenu, setOpenFilterMenu] = useState<boolean>(false);
@@ -62,14 +62,7 @@ export default function HomepageLayout() {
     }, []);
 
     async function getDishes(): Promise<void> {
-
-        const cached = localStorage.getItem(CacheStorage.dishes);
-        if(cached){
-            setDishes(JSON.parse(cached));
-            return
-        }
-
-        const dishService = new DishService();
+        const dishService = new RequestService();
         const dishesData = await dishService.getAllDishes()
 
         if (dishesData.status) {
@@ -96,6 +89,10 @@ export default function HomepageLayout() {
 
     }
 
+    async function handleAddTag(){
+        setOpenTag(true)
+    }
+
     async function handleAddDish() {
         setOpenDish(true)
     }
@@ -110,7 +107,7 @@ export default function HomepageLayout() {
         }
 
         gsap.to(displayRef.current, {
-            bottom: openDisplayMenu ? "-100%" : "0%",
+            bottom: openDisplayMenu ? "-100%" : NavbarHeight,
         })
 
         setOpenDisplayMenu(!openDisplayMenu)
@@ -122,7 +119,7 @@ export default function HomepageLayout() {
         }
 
         gsap.to(filterRef.current, {
-            bottom: openFilterMenu ? "-100%" : "0%",
+            bottom: openFilterMenu ? "-100%" : NavbarHeight,
         })
 
         setOpenFilterMenu(!openFilterMenu)
@@ -146,6 +143,7 @@ export default function HomepageLayout() {
                     setTagFilter={setTagFilter}
                     handleFilter={handleFilter}
                     handleAddDish={handleAddDish}
+                    handleAddTag={handleAddTag}
                     handleSearch={handleSearch} />
             </Stack>
 
@@ -169,9 +167,9 @@ export default function HomepageLayout() {
                             const color = UtilsService.getColor(theme, index + 1)
                             return (
                                 <Grid.Col span={{
-                                    base: 12, xs: 6, sm: 4, md: 4, lg: 2
+                                    base: 12, xs: 6, sm: 4, md: 4, lg: 3, xl: 2
                                 }} key={`dish-${index}-${dish.name}`}>
-                                    <DishCard index={index + 1} dish={dish} bgColor={color.bg} textColor={color.text}/>
+                                    <DishDeck index={index + 1} dish={dish} bgColor={color.bg} textColor={color.text}/>
                                 </Grid.Col>
                             )
                         })
@@ -179,15 +177,14 @@ export default function HomepageLayout() {
                 </Grid>
             </Stack>
 
-
             <ControlBar toggleDisplayControl={toggleDisplayControl} toggleFilterControl={toggleFilterControl} handleRefresh={handleRefresh} handlePick={handlePick} handleShuffle={handleShuffle} />
 
             <Modal title={"Add Dish"} centered={true} opened={openDish} onClose={() => setOpenDish(false)}>
-                <DishModal />
+                <DishModal refresh={handleRefresh} close={() => setOpenDish(false)} />
             </Modal>
 
             <Modal title={"Add Tag"} centered={true} opened={openTag} onClose={() => setOpenTag(false)}>
-
+                <TagModal refresh={handleRefresh} close={() => setOpenTag(false)} />
             </Modal>
         </Container>
     )

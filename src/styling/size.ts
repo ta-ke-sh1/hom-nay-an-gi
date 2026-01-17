@@ -1,1 +1,1 @@
-export const NavbarHeight = 85;
+export const NavbarHeight = 115;

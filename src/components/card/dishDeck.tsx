@@ -9,7 +9,7 @@ export interface DishCardProps {
     textColor?: string,
 }
 
-export default function DishCard({ dish, index, bgColor = 'white', textColor = 'black' }: DishCardProps) {
+export default function DishDeck({ dish, index, bgColor = 'white', textColor = 'black' }: DishCardProps) {
     return (
         <Card shadow={'xs'} bdrs={'lg'} style={{
             height: '400px',

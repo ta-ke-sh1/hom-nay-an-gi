@@ -1,6 +1,5 @@
-import {Firestore} from "firebase/firestore"
+import {addDoc, deleteDoc, doc, Firestore, setDoc, updateDoc, getFirestore, collection, getDocs} from "firebase/firestore"
 import {initializeApp} from "firebase/app";
-import {getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import type {FirestoreTables} from "../enums/enums.ts";
 
 const firebaseConfig = {
@@ -33,8 +32,27 @@ export class DatabaseService {
         return DatabaseService.instance;
     }
 
-    public async get(table: FirestoreTables){
+    public async get(table: FirestoreTables) {
         const docs = await getDocs(collection(this.database, table))
         return docs.docs.map(doc => doc.data());
+    }
+
+    public async set(table: FirestoreTables, id: string, data: any) {
+        const ref = doc(this.database, table, id)
+        await setDoc(ref, data, {merge: true});
+    }
+
+    public async update(table: FirestoreTables, id: string, data: any) {
+        const ref = doc(this.database, table, id)
+        await updateDoc(ref, data, {merge: true});
+    }
+
+    public async add(table: FirestoreTables, data: any) {
+        console.log(data)
+        await addDoc(collection(this.database, table), data)
+    }
+
+    public async delete(table: FirestoreTables, id: string) {
+        await deleteDoc(doc(this.database, table, id))
     }
 }

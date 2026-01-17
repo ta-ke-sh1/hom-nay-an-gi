@@ -2,7 +2,7 @@ import {ActionIcon, Divider, Group, MultiSelect, Stack, Text, TextInput} from "@
 import {IconFilter, IconPlus, IconSearch} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import {CacheStorage} from "../../../enums/storage.ts";
-import {DishService} from "../../../services/dish.service.ts";
+import {RequestService} from "../../../services/request.service.ts";
 import {UtilsService} from "../../../services/utils.service.ts";
 import {ZIndexLevels} from "../../../styling/zIndex.ts";
 
@@ -11,10 +11,11 @@ interface FilterControlProps {
     setTagFilter: any,
     handleFilter: any,
     handleAddDish: any,
+    handleAddTag: any,
     handleSearch: any,
 }
 
-export default function FilterControls({ tagFilter, setTagFilter, handleFilter, handleAddDish, handleSearch }: FilterControlProps) {
+export default function FilterControls({ tagFilter, setTagFilter, handleFilter, handleAddDish, handleAddTag, handleSearch }: FilterControlProps) {
 
     const [tags, setTags] = useState<any[]>([])
 
@@ -39,7 +40,7 @@ export default function FilterControls({ tagFilter, setTagFilter, handleFilter, 
 
         const cache = localStorage.getItem(CacheStorage.tags)
         if(!cache || force) {
-            const dishService = new DishService();
+            const dishService = new RequestService();
             const tagsData = await dishService.getAllTags()
 
             if (tagsData.status) {
@@ -68,7 +69,7 @@ export default function FilterControls({ tagFilter, setTagFilter, handleFilter, 
                         }
                     }}/>
                     <ActionIcon onClick={handleFilter} size={'lg'}><IconFilter/></ActionIcon>
-                    <ActionIcon onClick={handleAddDish} size={'lg'}><IconPlus/></ActionIcon>
+                    <ActionIcon onClick={handleAddTag} size={'lg'}><IconPlus/></ActionIcon>
                 </Group>
             </Stack>
 

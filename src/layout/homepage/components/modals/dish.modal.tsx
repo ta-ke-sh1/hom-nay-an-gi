@@ -8,12 +8,16 @@ import {
 import type {Dish} from "../../../../model/dish/dish.ts";
 import {useEffect, useState} from "react";
 import {CacheStorage} from "../../../../enums/storage.ts";
+import {RequestService} from "../../../../services/request.service.ts";
+import {notifications} from "@mantine/notifications";
 
 interface DishModalProps {
     dish?: Dish
+    close: any,
+    refresh: any
 }
 
-export default function DishModal({ dish } : DishModalProps ) {
+export default function DishModal({ dish, close, refresh } : DishModalProps ) {
 
     const form = useForm<any>({
         initialValues: {
@@ -49,11 +53,33 @@ export default function DishModal({ dish } : DishModalProps ) {
         }
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
 
-        console.log(form.values)
-        // send to API or handle state
+        const service = new RequestService()
+
+        const response = await service.addDish({
+            name: form.values.name,
+            tags: form.values.tags,
+            locations: [],
+            images: []
+        })
+
+        if(response.status){
+            notifications.show({
+                color: 'blue',
+                title: 'Request result',
+                message: "Dish added!"
+            })
+            close()
+            refresh()
+        } else {
+            notifications.show({
+                color: 'red',
+                title: 'Request result',
+                message: e.toString()
+            })
+        }
     };
 
     return (
