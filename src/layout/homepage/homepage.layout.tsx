@@ -9,7 +9,6 @@ import type {Dish} from "../../model/dish/dish.ts";
 import {RequestService} from "../../services/request.service.ts";
 import {UtilsService} from "../../services/utils.service.ts";
 import DishDeck from "../../components/card/dishDeck.tsx";
-import {NavbarHeight} from "../../styling/size.ts";
 import {DeckNames} from "../../styling/colors.ts";
 import DishModal from "./components/modals/dish.modal.tsx";
 import {ZIndexLevels} from "../../styling/zIndex.ts";
@@ -48,17 +47,17 @@ export default function HomepageLayout() {
 
     // Control display
     useEffect(() => {
-        // if(displayRef.current){
-        //     gsap.set(displayRef.current, {
-        //         left: '-100%'
-        //     })
-        // }
-        //
-        // if(filterRef.current) {
-        //     gsap.set(filterRef.current, {
-        //         right: '-100%'
-        //     })
-        // }
+        if(displayRef.current){
+            gsap.set(displayRef.current, {
+                right: '-100%'
+            })
+        }
+
+        if(filterRef.current) {
+            gsap.set(filterRef.current, {
+                left: '-100%'
+            })
+        }
     }, []);
 
     async function getDishes(force: boolean = false): Promise<void> {
@@ -89,11 +88,15 @@ export default function HomepageLayout() {
     }
 
     async function handleShuffle() {
-
+        console.log('shuffle')
+        const temp = JSON.parse(JSON.stringify(dishes))
+        const shuffled = UtilsService.shuffleArray(temp)
+        setDishes(shuffled)
     }
 
     async function handlePick() {
-
+        const randomIndex = UtilsService.getRandomIndex(0, dishes.length)
+        console.log(dishes[randomIndex])
     }
 
     async function handleAddTag(){
@@ -114,7 +117,7 @@ export default function HomepageLayout() {
         }
 
         gsap.to(displayRef.current, {
-            bottom: openDisplayMenu ? "-100%" : NavbarHeight,
+            right: openDisplayMenu ? "-100%" : 0,
         })
 
         setOpenDisplayMenu(!openDisplayMenu)
@@ -126,7 +129,7 @@ export default function HomepageLayout() {
         }
 
         gsap.to(filterRef.current, {
-            bottom: openFilterMenu ? "-100%" : NavbarHeight,
+            left: openFilterMenu ? "-100%" : 0,
         })
 
         setOpenFilterMenu(!openFilterMenu)

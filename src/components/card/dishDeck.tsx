@@ -1,7 +1,6 @@
 import type {Dish} from "../../model/dish/dish.ts";
-import {Card, Group, Stack, Text, Title} from "@mantine/core";
+import {Card, Group, Stack, Title} from "@mantine/core";
 import {headerStyle} from "../../styling/typo.ts";
-import {UtilsService} from "../../services/utils.service.ts";
 import type {DeckNames} from "../../styling/colors.ts";
 
 export interface DishCardProps {
