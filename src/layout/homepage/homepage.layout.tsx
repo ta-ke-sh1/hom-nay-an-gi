@@ -11,11 +11,9 @@ import {UtilsService} from "../../services/utils.service.ts";
 import DishDeck from "../../components/card/dishDeck.tsx";
 import {DeckNames} from "../../styling/colors.ts";
 import DishModal from "./components/modals/dish.modal.tsx";
-import {ZIndexLevels} from "../../styling/zIndex.ts";
 import ControlBar from "./controls/control.tsx";
 import DisplayControls from "./controls/display.tsx";
 import FilterControls from "./controls/filter.tsx";
-import gsap from "gsap";
 import {CacheStorage} from "../../enums/storage.ts";
 import TagModal from "./components/modals/tag.modal.tsx";
 
@@ -36,7 +34,6 @@ export default function HomepageLayout() {
     // Form state
     const [openDish, setOpenDish] = useState<boolean>(false);
     const [openTag, setOpenTag] = useState<boolean>(false);
-
     const [openFilterMenu, setOpenFilterMenu] = useState<boolean>(false);
     const [openDisplayMenu, setOpenDisplayMenu] = useState<boolean>(false);
 
@@ -45,20 +42,6 @@ export default function HomepageLayout() {
         (async () => await getDishes())();
     }, []);
 
-    // Control display
-    useEffect(() => {
-        if(displayRef.current){
-            gsap.set(displayRef.current, {
-                right: '-100%'
-            })
-        }
-
-        if(filterRef.current) {
-            gsap.set(filterRef.current, {
-                left: '-100%'
-            })
-        }
-    }, []);
 
     async function getDishes(force: boolean = false): Promise<void> {
 
@@ -112,64 +95,15 @@ export default function HomepageLayout() {
     }
 
     function toggleDisplayControl() {
-        if(!displayRef.current){
-            return
-        }
-
-        gsap.to(displayRef.current, {
-            right: openDisplayMenu ? "-100%" : 0,
-        })
-
-        setOpenDisplayMenu(!openDisplayMenu)
+        setOpenDisplayMenu(true)
     }
 
     function toggleFilterControl() {
-        if(!filterRef.current){
-            return
-        }
-
-        gsap.to(filterRef.current, {
-            left: openFilterMenu ? "-100%" : 0,
-        })
-
-        setOpenFilterMenu(!openFilterMenu)
+        setOpenFilterMenu(true)
     }
 
     return (
         <Container fluid p={'xl'}>
-
-            <Stack ref={filterRef} p={'xl'} style={{
-                position: 'fixed',
-                left: '0%',
-                transform: 'translateY(-50%)',
-                top: '50%',
-                width: '600px',
-                zIndex: ZIndexLevels.HIGH,
-                backgroundColor: 'white',
-                border: '1px solid rgba(0,0,0,0.2)'
-            }}>
-                <FilterControls
-                    tagFilter={tagFilter}
-                    setTagFilter={setTagFilter}
-                    handleFilter={handleFilter}
-                    handleAddDish={handleAddDish}
-                    handleAddTag={handleAddTag}
-                    handleSearch={handleSearch} />
-            </Stack>
-
-            <Stack ref={displayRef} p={'xl'} style={{
-                position: 'fixed',
-                right: '0%',
-                transform: 'translateY(-50%)',
-                top: '50%',
-                width: '600px',
-                zIndex: ZIndexLevels.HIGH,
-                backgroundColor: 'white',
-                border: '1px solid rgba(0,0,0,0.2)'
-            }}>
-                <DisplayControls theme={theme} setTheme={setTheme} />
-            </Stack>
-
             <Stack>
                 <Grid gutter={40}>
                     {
@@ -200,6 +134,20 @@ export default function HomepageLayout() {
 
             <Modal title={"Add Tag"} centered={true} opened={openTag} onClose={() => setOpenTag(false)}>
                 <TagModal refresh={handleRefresh} close={() => setOpenTag(false)} />
+            </Modal>
+
+            <Modal title={"Filter"} centered={true} opened={openFilterMenu} onClose={() => setOpenFilterMenu(false)}>
+                <FilterControls
+                    tagFilter={tagFilter}
+                    setTagFilter={setTagFilter}
+                    handleFilter={handleFilter}
+                    handleAddDish={handleAddDish}
+                    handleAddTag={handleAddTag}
+                    handleSearch={handleSearch} />
+            </Modal>
+
+            <Modal title={"Display"} centered={true} opened={openDisplayMenu} onClose={() => setOpenDisplayMenu(false)}>
+                <DisplayControls theme={theme} setTheme={setTheme} />
             </Modal>
         </Container>
     )
