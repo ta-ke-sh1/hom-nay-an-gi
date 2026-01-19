@@ -1,28 +1,19 @@
-import {addDoc, deleteDoc, doc, Firestore, setDoc, updateDoc, getFirestore, collection, getDocs} from "firebase/firestore"
-import {initializeApp} from "firebase/app";
-import type {FirestoreTables} from "../enums/enums.ts";
+import type {DatabaseTables} from "../enums/enums.ts";
+import {createClient, type SupabaseClient} from '@supabase/supabase-js';
 
-const firebaseConfig = {
-    apiKey: import.meta.env.VITE_API_KEY,
-    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_APP_ID,
-    measurementId: import.meta.env.VITE_MEASUREMENT_ID
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
 export class DatabaseService {
 
     private static instance: DatabaseService;
 
-    private readonly database: Firestore;
+    private readonly database: SupabaseClient;
 
     private constructor() {
-        this.database = getFirestore(app);
+        console.log(supabaseUrl)
+        console.log(supabaseKey)
+        this.database = createClient(supabaseUrl, supabaseKey);
     }
 
     public static getInstance() {
@@ -32,27 +23,20 @@ export class DatabaseService {
         return DatabaseService.instance;
     }
 
-    public async get(table: FirestoreTables) {
-        const docs = await getDocs(collection(this.database, table))
-        return docs.docs.map(doc => doc.data());
+    public async get(table: DatabaseTables) {
+        return this.database.from(table).select();
     }
 
-    public async set(table: FirestoreTables, id: string, data: any) {
-        const ref = doc(this.database, table, id)
-        await setDoc(ref, data, {merge: true});
+    public async getByField(table: DatabaseTables, column: string, value: string) {
+        await this.database.from(table).select().eq(column, value)
     }
 
-    public async update(table: FirestoreTables, id: string, data: any) {
-        const ref = doc(this.database, table, id)
-        await updateDoc(ref, data, {merge: true});
-    }
-
-    public async add(table: FirestoreTables, data: any) {
+    public async add(table: DatabaseTables, data: any) {
         console.log(data)
-        await addDoc(collection(this.database, table), data)
+        await this.database.from(table).insert(data);
     }
 
-    public async delete(table: FirestoreTables, id: string) {
-        await deleteDoc(doc(this.database, table, id))
+    public async delete(table: DatabaseTables, id: string) {
+        await this.database.from(table).delete().eq('id', id)
     }
 }

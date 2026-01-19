@@ -61,7 +61,6 @@ export default function DishModal({ dish, close, refresh } : DishModalProps ) {
         const response = await service.addDish({
             name: form.values.name,
             tags: form.values.tags,
-            locations: [],
             images: []
         })
 

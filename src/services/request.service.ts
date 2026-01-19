@@ -1,33 +1,31 @@
 import {DatabaseService} from "./database.service.ts";
-import {FirestoreTables} from "../enums/enums.ts";
+import {DatabaseTables} from "../enums/enums.ts";
 import type {ResponseData} from "../model/requestDto.ts";
 import type {Tag} from "../model/tag/tag.ts";
 import BaseService from "./base.service.ts";
-import type {Dish} from "../model/dish/dish.ts";
 
 export class RequestService extends BaseService {
 
     async getAllDishes(): Promise<ResponseData> {
-        const dishes = await DatabaseService.getInstance().get(FirestoreTables.DISHES)
-
+        const dishes = await DatabaseService.getInstance().get(DatabaseTables.DISHES)
         return {
             status: true,
-            data: dishes,
+            data: dishes.data ?? [],
         }
     }
 
     async getAllTags(): Promise<ResponseData> {
-        const tags = await DatabaseService.getInstance().get(FirestoreTables.TAGS)
+        const tags = await DatabaseService.getInstance().get(DatabaseTables.TAGS)
 
         return {
             status: true,
-            data: tags,
+            data: tags.data ?? [],
         }
     }
 
-    async addDish(dish: Dish): Promise<ResponseData> {
+    async addDish(dish: any): Promise<ResponseData> {
         try {
-            await DatabaseService.getInstance().add(FirestoreTables.DISHES, dish)
+            await DatabaseService.getInstance().add(DatabaseTables.DISHES, dish)
             return {
                 status: true
             }
@@ -42,7 +40,7 @@ export class RequestService extends BaseService {
 
     async addTag(tag: Tag): Promise<ResponseData> {
         await this.safeRequest(
-            DatabaseService.getInstance().add(FirestoreTables.TAGS, tag)
+            DatabaseService.getInstance().add(DatabaseTables.TAGS, tag)
         )
 
         return {

@@ -1,5 +1,5 @@
 export const headerStyle = {
-    fontFamily: "Arimo"
+    fontFamily: "Andada Pro"
 }
 
 export const paragraphStyle = {

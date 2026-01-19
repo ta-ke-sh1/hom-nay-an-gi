@@ -48,20 +48,27 @@ export default function HomepageLayout() {
 
     // Control display
     useEffect(() => {
-        if(displayRef.current){
-            gsap.set(displayRef.current, {
-                bottom: '-100%'
-            })
-        }
-
-        if(filterRef.current) {
-            gsap.set(filterRef.current, {
-                bottom: '-100%'
-            })
-        }
+        // if(displayRef.current){
+        //     gsap.set(displayRef.current, {
+        //         left: '-100%'
+        //     })
+        // }
+        //
+        // if(filterRef.current) {
+        //     gsap.set(filterRef.current, {
+        //         right: '-100%'
+        //     })
+        // }
     }, []);
 
-    async function getDishes(): Promise<void> {
+    async function getDishes(force: boolean = false): Promise<void> {
+
+        const cached = localStorage.getItem(CacheStorage.dishes);
+        if(cached && !force){
+            setDishes(JSON.parse(cached));
+            return
+        }
+
         const dishService = new RequestService();
         const dishesData = await dishService.getAllDishes()
 
@@ -130,9 +137,9 @@ export default function HomepageLayout() {
 
             <Stack ref={filterRef} p={'xl'} style={{
                 position: 'fixed',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                bottom: NavbarHeight,
+                left: '0%',
+                transform: 'translateY(-50%)',
+                top: '50%',
                 width: '600px',
                 zIndex: ZIndexLevels.HIGH,
                 backgroundColor: 'white',
@@ -149,9 +156,9 @@ export default function HomepageLayout() {
 
             <Stack ref={displayRef} p={'xl'} style={{
                 position: 'fixed',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                bottom: NavbarHeight,
+                right: '0%',
+                transform: 'translateY(-50%)',
+                top: '50%',
                 width: '600px',
                 zIndex: ZIndexLevels.HIGH,
                 backgroundColor: 'white',
@@ -161,7 +168,7 @@ export default function HomepageLayout() {
             </Stack>
 
             <Stack>
-                <Grid>
+                <Grid gutter={40}>
                     {
                         dishes.length > 0 && dishes.map((dish: Dish, index: number) => {
                             const color = UtilsService.getColor(theme, index + 1)
@@ -169,7 +176,7 @@ export default function HomepageLayout() {
                                 <Grid.Col span={{
                                     base: 12, xs: 6, sm: 4, md: 4, lg: 3, xl: 2
                                 }} key={`dish-${index}-${dish.name}`}>
-                                    <DishDeck index={index + 1} dish={dish} bgColor={color.bg} textColor={color.text}/>
+                                    <DishDeck theme={theme} index={index + 1} dish={dish} bgColor={color.bg} textColor={color.text}/>
                                 </Grid.Col>
                             )
                         })
@@ -177,7 +184,12 @@ export default function HomepageLayout() {
                 </Grid>
             </Stack>
 
-            <ControlBar toggleDisplayControl={toggleDisplayControl} toggleFilterControl={toggleFilterControl} handleRefresh={handleRefresh} handlePick={handlePick} handleShuffle={handleShuffle} />
+            <ControlBar
+                toggleDisplayControl={toggleDisplayControl}
+                toggleFilterControl={toggleFilterControl}
+                handleRefresh={handleRefresh}
+                handlePick={handlePick}
+                handleShuffle={handleShuffle} />
 
             <Modal title={"Add Dish"} centered={true} opened={openDish} onClose={() => setOpenDish(false)}>
                 <DishModal refresh={handleRefresh} close={() => setOpenDish(false)} />
