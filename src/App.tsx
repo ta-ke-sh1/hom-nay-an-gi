@@ -5,8 +5,9 @@ import HomepageLayout from "./layout/homepage/homepage.layout.tsx";
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import "@fontsource/andada-pro/400.css";
-import "@fontsource/be-vietnam-pro/400.css";
+
+import "@fontsource/instrument-serif/400-italic.css";
+import "@fontsource/google-sans/400.css";
 
 import {Notifications} from "@mantine/notifications";
 
@@ -20,7 +21,7 @@ export default function App(){
     ])
 
     const theme = createTheme({
-        fontFamily: "Be Vietnam Pro",
+        fontFamily: "Google Sans",
     })
 
     return (

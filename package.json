@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@eslint/js": "^9.39.2",
-    "@fontsource/andada-pro": "^5.2.8",
-    "@fontsource/be-vietnam-pro": "^5.2.8",
+    "@fontsource/google-sans": "^5.2.1",
+    "@fontsource/instrument-serif": "^5.2.8",
     "@mantine/core": "^8.3.12",
     "@mantine/form": "^8.3.12",
     "@mantine/hooks": "^8.3.12",

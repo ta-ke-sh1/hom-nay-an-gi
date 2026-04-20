@@ -38,14 +38,14 @@ export default function FilterControls({ tagFilter, setTagFilter, handleFilter, 
             setTags(labels)
         }
 
-        const cache = localStorage.getItem(CacheStorage.tags)
+        const cache = sessionStorage.getItem(CacheStorage.tags)
         if(!cache || force) {
             const dishService = new RequestService();
             const tagsData = await dishService.getAllTags()
 
             if (tagsData.status) {
                 tagToSelectOption(tagsData.data!)
-                localStorage.setItem(CacheStorage.tags, JSON.stringify(tagsData.data))
+                sessionStorage.setItem(CacheStorage.tags, JSON.stringify(tagsData.data))
             } else {
                 UtilsService.log_timestamp(tagsData.message!)
             }

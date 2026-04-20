@@ -89,3 +89,7 @@ export const ColorDecks: Record<DeckNames, Color[]> = {
         }
     ]
 }
+
+export const BUTTON_COLORS = {
+    PRIMARY: "#fd7e14"
+}

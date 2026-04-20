@@ -1,23 +1,21 @@
 import type {Dish} from "../../model/dish/dish.ts";
 import {Card, Group, Stack, Title} from "@mantine/core";
 import {headerStyle} from "../../styling/typo.ts";
-import type {DeckNames} from "../../styling/colors.ts";
 
 export interface DishCardProps {
     dish: Dish,
-    theme: DeckNames,
     index: number,
     bgColor?: string,
     textColor?: string,
 }
 
-export default function DishDeck({dish, index, theme, bgColor = 'white', textColor = 'black'}: DishCardProps) {
+export default function DishDeck({dish, index,  bgColor = 'white', textColor = 'black'}: DishCardProps) {
     return (
         <div style={{
             position: 'relative',
         }}>
             <Card shadow={'xs'} bdrs={'lg'} style={{
-                height: '400px',
+                height: '100px',
                 backgroundColor: bgColor,
             }}>
                 <Card.Section pl={'lg'} pt={"md"} pr={"lg"} style={{

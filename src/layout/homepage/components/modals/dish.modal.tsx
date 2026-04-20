@@ -45,7 +45,7 @@ export default function DishModal({ dish, close, refresh } : DishModalProps ) {
             setTags(labels)
         }
 
-        const cache = localStorage.getItem(CacheStorage.tags)
+        const cache = sessionStorage.getItem(CacheStorage.tags)
         if(!cache) {
             setTags([])
         } else {

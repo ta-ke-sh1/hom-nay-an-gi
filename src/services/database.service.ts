@@ -11,8 +11,6 @@ export class DatabaseService {
     private readonly database: SupabaseClient;
 
     private constructor() {
-        console.log(supabaseUrl)
-        console.log(supabaseKey)
         this.database = createClient(supabaseUrl, supabaseKey);
     }
 
