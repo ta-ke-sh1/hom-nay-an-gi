@@ -1,0 +1,16 @@
+/* global.css */
+.mantine-Input-input::placeholder {
+  color: white !important;
+  opacity: 1;
+}
+
+.control-bar .mantine-ActionIcon-root {
+  transition-duration: 0.3s;
+
+  &:hover {
+    background-color: #f3722c;
+    .tabler-icon {
+      stroke: white;
+    }
+  }
+}

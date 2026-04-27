@@ -1,6 +1,6 @@
 import {Select, Stack, Text} from "@mantine/core";
-import {DeckNames} from "../../../styling/colors.ts";
-import {ZIndexLevels} from "../../../styling/zIndex.ts";
+import {DeckNames} from "../../../../styling/colors.ts";
+import {ZIndexLevels} from "../../../../styling/zIndex.ts";
 
 interface DisplayControlProps {
     theme: DeckNames,

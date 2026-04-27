@@ -90,6 +90,20 @@ export const ColorDecks: Record<DeckNames, Color[]> = {
     ]
 }
 
-export const BUTTON_COLORS = {
-    PRIMARY: "#fd7e14"
+export const THEME_COLORS = {
+    PRIMARY: "#f3722c",
+    BACKGROUND: "rgb(234,216,203)",
+}
+
+export const BORDERS = {
+    DEFAULT: "1px solid rgba(0,0,0,0.1)"
+}
+
+export const BG_COLORS = {
+    DEFAULT: "rgba(0,0,0,0.05)"
+}
+
+export const TEXT_COLORS = {
+    title: "#424242",
+    paragraph: "#696969",
 }

@@ -3,11 +3,15 @@ import {DatabaseTables} from "../enums/enums.ts";
 import type {ResponseData} from "../model/requestDto.ts";
 import type {Tag} from "../model/tag/tag.ts";
 import BaseService from "./base.service.ts";
+import {UtilsService} from "./utils.service.ts";
 
 export class RequestService extends BaseService {
 
     async getAllDishes(): Promise<ResponseData> {
-        const dishes = await DatabaseService.getInstance().get(DatabaseTables.DISHES)
+        const dishes = await DatabaseService.getInstance().getDatabase().from(DatabaseTables.DISHES).select('*, locations(count)')
+
+        console.log(dishes);
+
         return {
             status: true,
             data: dishes.data ?? [],
@@ -45,6 +49,22 @@ export class RequestService extends BaseService {
 
         return {
             status: true
+        }
+    }
+
+    async getDataHandler(table: string, setter: any, getter: any, force: boolean) {
+        const cached = sessionStorage.getItem(table);
+        if (cached && !force) {
+            setter(JSON.parse(cached));
+            return
+        }
+
+        const data = await getter()
+        if (data.status) {
+            setter(data.data!)
+            sessionStorage.setItem(table, JSON.stringify(data.data!))
+        } else {
+            UtilsService.log_timestamp(data.message!)
         }
     }
 

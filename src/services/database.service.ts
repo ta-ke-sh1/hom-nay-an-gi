@@ -21,6 +21,10 @@ export class DatabaseService {
         return DatabaseService.instance;
     }
 
+    public getDatabase() {
+        return this.database;
+    }
+
     public async get(table: DatabaseTables) {
         return this.database.from(table).select();
     }

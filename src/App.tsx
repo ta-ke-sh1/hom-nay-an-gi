@@ -5,7 +5,7 @@ import HomepageLayout from "./layout/homepage/homepage.layout.tsx";
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-
+import "./app.scss"
 import "@fontsource/instrument-serif/400-italic.css";
 import "@fontsource/google-sans/400.css";
 
@@ -25,7 +25,7 @@ export default function App(){
     })
 
     return (
-        <MantineProvider theme={theme}>
+        <MantineProvider theme={theme} defaultColorScheme={'light'}>
             <Notifications />
             <RouterProvider router={router} />
         </MantineProvider>
