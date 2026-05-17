@@ -5,12 +5,13 @@ import {BG_COLORS, BORDERS, TEXT_COLORS, THEME_COLORS} from "../../styling/color
 
 export interface DishCardProps {
     dish: Dish,
+    index: number
 }
 
-export default function DishCard({dish,}: DishCardProps) {
+export default function DishCard({dish, number }: DishCardProps) {
     return (
         <Card shadow={'sm'} bdrs={'lg'} style={{
-            height: '30dvh',
+            height: '100%',
             border: BORDERS.DEFAULT,
             width: '100%',
             backgroundColor: BG_COLORS.DEFAULT,

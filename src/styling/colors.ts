@@ -100,7 +100,7 @@ export const BORDERS = {
 }
 
 export const BG_COLORS = {
-    DEFAULT: "rgba(0,0,0,0.05)"
+    DEFAULT: "rgba(255,255,255,1)"
 }
 
 export const TEXT_COLORS = {

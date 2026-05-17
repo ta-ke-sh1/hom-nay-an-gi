@@ -1,5 +1,5 @@
 import {
-    Container, Grid, Group,
+    Container, Grid, Modal,
 } from "@mantine/core";
 import {useEffect, useState} from "react";
 import type {Dish} from "../../model/dish/dish.ts";
@@ -13,6 +13,8 @@ import gsap from "gsap";
 import Helpers from "../../services/helpers.ts";
 import {CARD_CLASS_NAME, CONTAINER_IDS} from "../../services/animation/element_id.enums.ts";
 import DishCard from "../../components/card/dishCard.tsx";
+import {notifications} from "@mantine/notifications";
+import SelectedDish from "./components/modals/selected.modal.tsx";
 
 gsap.registerPlugin(Flip);
 
@@ -20,6 +22,8 @@ export default function HomepageLayout() {
 
     // Data
     const [dishes, setDishes] = useState<Dish[]>([]);
+
+    const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
 
     // Fetch dishes
     useEffect(() => {
@@ -33,22 +37,6 @@ export default function HomepageLayout() {
 
     function handleReset() {
         try {
-            const selectedContainer = Helpers.getElementById(CONTAINER_IDS.selected_container)
-            const children = selectedContainer.children
-
-            const deckContainer = Helpers.getElementById(CONTAINER_IDS.deck_container)
-
-            for (let i = 0; i < children.length; i++) {
-                const state = Flip.getState(children[i])
-                deckContainer.children[0].appendChild(children[i])
-                Flip.from(state, {
-                    position: 'relative',
-                    duration: 0.6,
-                    ease: "power1.inOut",
-                    absolute: true,
-                    rotate: 0
-                })
-            }
 
         } catch (e: any) {
             notifications.show({
@@ -60,27 +48,9 @@ export default function HomepageLayout() {
 
     async function handlePick() {
         handleReset()
-        // const randomIndex = UtilsService.getRandomIndex(0, dishes.length)
-        // const dish = dishes[randomIndex]
-
         const temp = JSON.parse(JSON.stringify(dishes))
         const shuffled = UtilsService.shuffleArray(temp)
-        const selectedContainer = Helpers.getElementById(CONTAINER_IDS.selected_container)
-
-        for(let i = 0; i < shuffled.length; i++) {
-            const item = document.getElementById(Helpers.getCardElementId(shuffled[i].name))
-            const state = Flip.getState(item)
-            selectedContainer.appendChild(item)
-            Flip.from(state, {
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                duration: 0.6,
-                ease: "power1.inOut",
-                absolute: true,
-                rotate: 0
-            })
-        }
+        setSelectedDish(shuffled[0])
     }
 
     async function handleAddDish() {
@@ -99,26 +69,23 @@ export default function HomepageLayout() {
                             return (
                                 <Grid.Col span={{
                                     base: 12, sm: 6, md: 4, lg: 3
-                                }} className={CARD_CLASS_NAME} id={cardId} key={`${cardId}-${index}`}>
+                                }} className={CARD_CLASS_NAME} id={cardId} key={`${cardId}-${index}`} style={{
+                                    height: '30dvh'
+                                }}>
                                     <DishCard index={index + 1} dish={dish}/>
                                 </Grid.Col>
                             )
                         })
                     }
                 </Grid>
-                <Group justify={'center'} id={CONTAINER_IDS.selected_container} style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    minWidth: '1000px',
-                    transform: 'translate(-50%, -50%)'
-                }}>
-                </Group>
                 <ControlBar
                     handleAddDish={handleAddDish}
                     handlePick={handlePick}
                 />
             </Container>
+            <Modal fullScreen={true} opened={Boolean(selectedDish)} onClose={() => setSelectedDish(null)}>
+                <SelectedDish dish={selectedDish}/>
+            </Modal>
         </>
 
     )
